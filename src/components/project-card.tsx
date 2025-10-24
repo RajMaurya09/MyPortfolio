@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Github, ExternalLink, Edit, Trash2 } from "lucide-react";
+import { Github, ExternalLink } from "lucide-react";
 import type { Project } from "@/lib/projects-data";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,27 +15,14 @@ const cardVariants = {
 
 type ProjectCardProps = {
   project: Project;
-  isEditing?: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
 };
 
-export function ProjectCard({ project, isEditing, onEdit, onDelete }: ProjectCardProps) {
+export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <motion.div
       variants={cardVariants}
       className="glass-card overflow-hidden flex flex-col glow-effect relative"
     >
-      {isEditing && (
-        <div className="absolute top-2 right-2 z-10 flex gap-2">
-          <Button size="icon" variant="secondary" onClick={onEdit}>
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button size="icon" variant="destructive" onClick={onDelete}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
       <div className="relative aspect-video">
         <Image
           src={project.imageUrl}

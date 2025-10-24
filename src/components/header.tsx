@@ -5,17 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Code2, LogIn, LogOut } from "lucide-react";
-import { useUser, useAuth } from "@/firebase";
-import { getAuth, signOut } from "firebase/auth";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Code2 } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
@@ -27,8 +17,6 @@ const navItems = [
 
 export default function Header() {
   const pathname = usePathname();
-  const user = useUser();
-  const auth = useAuth();
   const [hidden, setHidden] = useState(false);
   const { scrollY } = useScroll();
 
@@ -40,12 +28,6 @@ export default function Header() {
       setHidden(false);
     }
   });
-
-
-  const handleLogout = async () => {
-    if (!auth) return;
-    await signOut(auth);
-  };
 
   return (
     <motion.header 
@@ -88,31 +70,6 @@ export default function Header() {
         </nav>
         <div className="flex items-center gap-4">
           <ThemeToggle />
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} />
-                    <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/login">
-                <LogIn className="mr-2 h-4 w-4" />
-                Login
-              </Link>
-            </Button>
-          )}
         </div>
       </div>
     </motion.header>
