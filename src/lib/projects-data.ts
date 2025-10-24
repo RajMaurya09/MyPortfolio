@@ -1,0 +1,71 @@
+export type Project = {
+  id: number;
+  title: string;
+  description: string;
+  technologies: string[];
+  imageUrl: string;
+  imageHint: string;
+  liveUrl?: string;
+  repoUrl?: string;
+};
+
+export const projectsData: Project[] = [
+  {
+    id: 1,
+    title: "E-commerce Platform",
+    description: "A full-featured e-commerce site with product listings, a shopping cart, and a checkout process, built with a focus on performance and user experience.",
+    technologies: ["Next.js", "React", "Tailwind CSS", "Stripe", "Prisma"],
+    imageUrl: "https://picsum.photos/seed/project1/600/400",
+    imageHint: "online store",
+    liveUrl: "#",
+    repoUrl: "#",
+  },
+  {
+    id: 2,
+    title: "Task Management App",
+    description: "A collaborative task management tool that allows users to create, assign, and track tasks with real-time updates and notifications.",
+    technologies: ["React", "Firebase", "Framer Motion", "Node.js"],
+    imageUrl: "https://picsum.photos/seed/project2/600/400",
+    imageHint: "to-do list",
+    liveUrl: "#",
+    repoUrl: "#",
+  },
+  {
+    id: 3,
+    title: "Portfolio Website V1",
+    description: "A previous version of my personal portfolio, showcasing a different design aesthetic and my progression as a developer.",
+    technologies: ["HTML", "CSS", "JavaScript", "GSAP"],
+    imageUrl: "https://picsum.photos/seed/project3/600/400",
+    imageHint: "personal website",
+    liveUrl: "#",
+    repoUrl: "#",
+  },
+    {
+    id: 4,
+    title: "Real-time Chat Application",
+    description: "A web-based chat app using WebSockets for instant messaging, with features like user authentication and private chat rooms.",
+    technologies: ["React", "Socket.IO", "Node.js", "Express"],
+    imageUrl: "https://picsum.photos/seed/project4/600/400",
+    imageHint: "chat bubbles",
+    liveUrl: "#",
+    repoUrl: "#",
+  },
+    {
+    id: 5,
+    title: "Weather Dashboard",
+    description: "A clean and simple weather dashboard that fetches and displays current weather data from a third-party API based on user location.",
+    technologies: ["Vue.js", "OpenWeatherMap API", "CSS"],
+    imageUrl: "https://picsum.photos/seed/project5/600/400",
+    imageHint: "weather forecast",
+    liveUrl: "#",
+  },
+    {
+    id: 6,
+    title: "Blog Platform",
+    description: "A content management system (CMS) for a personal blog, featuring a Markdown editor, comments, and post categories.",
+    technologies: ["Next.js", "MDX", "Prisma", "PostgreSQL"],
+    imageUrl: "https://picsum.photos/seed/project6/600/400",
+    imageHint: "writing blog",
+    repoUrl: "#",
+  },
+];
