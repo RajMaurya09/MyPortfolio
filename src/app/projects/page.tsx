@@ -7,6 +7,7 @@ import { projectsData, type Project } from "@/lib/projects-data";
 import { Button } from "@/components/ui/button";
 import { Plus, X, Edit } from "lucide-react";
 import { ProjectFormDialog } from "@/components/project-form-dialog";
+import { useUser } from "@/firebase";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -19,6 +20,7 @@ const containerVariants = {
 };
 
 export default function ProjectsPage() {
+  const user = useUser();
   const [projects, setProjects] = useState<Project[]>(projectsData);
   const [isEditing, setIsEditing] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -59,17 +61,19 @@ export default function ProjectsPage() {
       >
         <div className="flex justify-center items-center gap-4">
           <h1 className="font-headline text-4xl font-bold text-primary">My Projects</h1>
-          <Button variant="ghost" size="icon" onClick={() => setIsEditing(!isEditing)}>
-            {isEditing ? <X /> : <Edit />}
-            <span className="sr-only">{isEditing ? 'Cancel' : 'Edit Projects'}</span>
-          </Button>
+          {user && (
+            <Button variant="ghost" size="icon" onClick={() => setIsEditing(!isEditing)}>
+              {isEditing ? <X /> : <Edit />}
+              <span className="sr-only">{isEditing ? 'Cancel' : 'Edit Projects'}</span>
+            </Button>
+          )}
         </div>
         <p className="mt-2 text-lg text-muted-foreground">
           A selection of projects I've worked on.
         </p>
       </motion.div>
 
-      {isEditing && (
+      {isEditing && user && (
         <div className="text-center">
           <Button onClick={handleAddProject}>
             <Plus className="mr-2" /> Add Project
@@ -87,7 +91,7 @@ export default function ProjectsPage() {
           <ProjectCard
             key={project.id}
             project={project}
-            isEditing={isEditing}
+            isEditing={isEditing && !!user}
             onEdit={() => handleEditProject(project)}
             onDelete={() => handleDeleteProject(project.id)}
           />

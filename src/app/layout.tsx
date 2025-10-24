@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import AnimatedBackground from "@/components/animated-background";
+import { FirebaseClientProvider } from "@/firebase/client-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -30,15 +31,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AnimatedBackground />
-          <div className="relative z-10 flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
+          <FirebaseClientProvider>
+            <AnimatedBackground />
+            <div className="relative z-10 flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <Toaster />
+          </FirebaseClientProvider>
         </ThemeProvider>
       </body>
     </html>

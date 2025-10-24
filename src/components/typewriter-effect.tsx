@@ -20,18 +20,18 @@ const TypewriterEffect = ({ texts, delay = 3000 }: TypewriterEffectProps) => {
   }, [texts.length, delay]);
 
   return (
-    <div className="mt-4 font-headline text-lg sm:text-xl md:text-2xl text-primary h-8">
+    <div className="mt-4 font-headline text-lg sm:text-xl md:text-2xl text-primary h-16 sm:h-auto glass-card p-4 rounded-xl">
       <AnimatePresence mode="wait">
-        <motion.p
+        <motion.div
           key={texts[index]}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.5 }}
-          className="whitespace-nowrap"
+          className="whitespace-nowrap flex items-center justify-center h-8"
         >
-          {texts[index]}
-        </motion.p>
+          <p>{texts[index]}</p>
+        </motion.div>
       </AnimatePresence>
     </div>
   );

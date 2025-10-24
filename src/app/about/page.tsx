@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { useUser } from "@/firebase";
 
 const aboutImage = placeholderData.placeholderImages.find(
   (img) => img.id === "about-raj"
@@ -21,6 +22,7 @@ const initialSkills = {
 };
 
 export default function AboutPage() {
+  const user = useUser();
   const [skills, setSkills] = useState(initialSkills);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -70,10 +72,12 @@ export default function AboutPage() {
       <div className="space-y-8">
         <div className="flex justify-center items-center gap-4">
             <h2 className="text-center font-headline text-3xl font-bold">My Tech Stack</h2>
-            <Button variant="ghost" size="icon" onClick={() => setIsEditing(!isEditing)}>
-                {isEditing ? <X /> : <Edit />}
-                <span className="sr-only">{isEditing ? 'Cancel' : 'Edit Skills'}</span>
-            </Button>
+            {user && (
+              <Button variant="ghost" size="icon" onClick={() => setIsEditing(!isEditing)}>
+                  {isEditing ? <X /> : <Edit />}
+                  <span className="sr-only">{isEditing ? 'Cancel' : 'Edit Skills'}</span>
+              </Button>
+            )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <SkillCard 
@@ -154,5 +158,3 @@ const SkillCard = ({ icon, title, skills, isEditing, onUpdate }: { icon: React.R
     </motion.div>
   )
 }
-
-    
