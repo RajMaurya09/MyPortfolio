@@ -4,19 +4,30 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import placeholderData from "@/lib/placeholder-images.json";
-import { Code, Database, Server, Wind } from "lucide-react";
+import { Code, Database, Edit, Plus, Server, Save, Trash2, Wind, X, XCircle } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 
 const aboutImage = placeholderData.placeholderImages.find(
   (img) => img.id === "about-raj"
 );
 
-const skills = {
+const initialSkills = {
   frontend: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
   backend: ["Node.js", "Express", "Firebase", "PostgreSQL", "Prisma"],
   tools: ["Git", "Docker", "Vite", "Webpack"],
 };
 
 export default function AboutPage() {
+  const [skills, setSkills] = useState(initialSkills);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleUpdateSkills = (category: keyof typeof initialSkills, newSkills: string[]) => {
+    setSkills(prev => ({ ...prev, [category]: newSkills }));
+  };
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -57,18 +68,56 @@ export default function AboutPage() {
       </div>
       
       <div className="space-y-8">
-        <h2 className="text-center font-headline text-3xl font-bold">My Tech Stack</h2>
+        <div className="flex justify-center items-center gap-4">
+            <h2 className="text-center font-headline text-3xl font-bold">My Tech Stack</h2>
+            <Button variant="ghost" size="icon" onClick={() => setIsEditing(!isEditing)}>
+                {isEditing ? <X /> : <Edit />}
+                <span className="sr-only">{isEditing ? 'Cancel' : 'Edit Skills'}</span>
+            </Button>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <SkillCard icon={<Code />} title="Frontend" skills={skills.frontend} />
-          <SkillCard icon={<Server />} title="Backend" skills={skills.backend} />
-          <SkillCard icon={<Wind />} title="Tools & Technologies" skills={skills.tools} />
+          <SkillCard 
+            icon={<Code />} 
+            title="Frontend" 
+            skills={skills.frontend}
+            isEditing={isEditing}
+            onUpdate={(newSkills) => handleUpdateSkills('frontend', newSkills)}
+          />
+          <SkillCard 
+            icon={<Server />} 
+            title="Backend" 
+            skills={skills.backend} 
+            isEditing={isEditing}
+            onUpdate={(newSkills) => handleUpdateSkills('backend', newSkills)}
+          />
+          <SkillCard 
+            icon={<Wind />} 
+            title="Tools & Technologies" 
+            skills={skills.tools} 
+            isEditing={isEditing}
+            onUpdate={(newSkills) => handleUpdateSkills('tools', newSkills)}
+          />
         </div>
       </div>
     </motion.div>
   );
 }
 
-const SkillCard = ({ icon, title, skills }: { icon: React.ReactNode, title: string, skills: string[] }) => (
+const SkillCard = ({ icon, title, skills, isEditing, onUpdate }: { icon: React.ReactNode, title: string, skills: string[], isEditing: boolean, onUpdate: (skills: string[]) => void }) => {
+  const [newSkill, setNewSkill] = useState("");
+
+  const handleAddSkill = () => {
+    if (newSkill && !skills.includes(newSkill)) {
+      onUpdate([...skills, newSkill]);
+      setNewSkill("");
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    onUpdate(skills.filter(skill => skill !== skillToRemove));
+  };
+
+  return (
     <motion.div
         whileHover={{ y: -5 }}
         className="glass-card p-6 space-y-4"
@@ -79,8 +128,31 @@ const SkillCard = ({ icon, title, skills }: { icon: React.ReactNode, title: stri
         </div>
         <div className="flex flex-wrap gap-2">
             {skills.map(skill => (
-                <Badge key={skill} variant="secondary" className="text-sm">{skill}</Badge>
+                <Badge key={skill} variant="secondary" className="text-sm relative group">
+                    {skill}
+                    {isEditing && (
+                      <button onClick={() => handleRemoveSkill(skill)} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full h-4 w-4 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <X className="h-3 w-3" />
+                      </button>
+                    )}
+                </Badge>
             ))}
         </div>
+        {isEditing && (
+          <div className="flex gap-2">
+            <Input 
+              placeholder="Add skill" 
+              value={newSkill} 
+              onChange={(e) => setNewSkill(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()}
+            />
+            <Button size="icon" onClick={handleAddSkill}>
+              <Plus />
+            </Button>
+          </div>
+        )}
     </motion.div>
-)
+  )
+}
+
+    
