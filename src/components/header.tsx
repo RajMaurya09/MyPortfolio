@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Code2 } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
@@ -41,8 +40,7 @@ export default function Header() {
     >
       <div className="container flex h-16 max-w-7xl items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-headline text-lg font-bold">
-          <Code2 className="h-6 w-6 text-primary" />
-          <span className="hidden sm:inline">Raj Maurya</span>
+          <span className="inline">Raj Maurya</span>
         </Link>
         <nav className="hidden md:flex">
           <ul className="flex items-center gap-6 text-sm">

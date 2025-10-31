@@ -25,8 +25,9 @@ export default function Home() {
 
       <TypewriterEffect
         texts={[
-          "A Full-Stack Developer",
+          "A Front-End Developer",
           "A React.js Specialist",
+          "JavaScript",
           "A Next.js Enthusiast",
           "A Creative Problem Solver",
         ]}

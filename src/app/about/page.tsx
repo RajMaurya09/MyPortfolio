@@ -48,7 +48,7 @@ export default function AboutPage() {
         <div className="md:col-span-2 space-y-4">
           <h1 className="font-headline text-4xl font-bold text-primary">About Me</h1>
           <p className="text-lg text-muted-foreground">
-            I'm a passionate full-stack developer with a knack for creating dynamic, user-friendly web applications. With a foundation in both front-end and back-end technologies, I enjoy bringing ideas to life from concept to deployment.
+            I'm a passionate Front-End developer with a knack for creating dynamic, user-friendly web applications. With a foundation in both front-end and back-end technologies, I enjoy bringing ideas to life from concept to deployment.
           </p>
           <p className="text-lg text-muted-foreground">
             My journey in web development started with a simple "Hello, World!" and has since grown into a full-fledged passion for building scalable and efficient solutions. I thrive in collaborative environments and am always eager to learn new technologies and improve my craft.
