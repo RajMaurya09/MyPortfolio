@@ -67,20 +67,20 @@ export default function ProjectsPage() {
         className="text-center"
       >
         <div className="flex justify-center items-center gap-4">
-          <h1 className="font-headline text-4xl font-bold text-primary">My Projects</h1>
+          <h1 className="font-headline text-3xl sm:text-4xl font-bold text-primary">My Projects</h1>
           {isLoggedIn && (
-            <Button onClick={handleAddProject} size="icon">
-              <Plus />
+            <Button onClick={handleAddProject} size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+              <Plus className="h-4 w-4 sm:h-5 sm:w-5"/>
             </Button>
           )}
         </div>
-        <p className="mt-2 text-lg text-muted-foreground">
+        <p className="mt-2 text-base sm:text-lg text-muted-foreground">
           A selection of projects I've worked on.
         </p>
       </div>
 
       <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
       >
         {projects.map((project) => (
           <div key={project.id} className="relative group">
