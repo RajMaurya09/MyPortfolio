@@ -23,7 +23,6 @@ export default function ProjectsPage() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectToDelete, setProjectToDelete] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock auth state
 
   const handleAddProject = () => {
     setSelectedProject(null);
@@ -68,11 +67,6 @@ export default function ProjectsPage() {
       >
         <div className="flex justify-center items-center gap-4">
           <h1 className="font-headline text-3xl sm:text-4xl font-bold text-primary">My Projects</h1>
-          {isLoggedIn && (
-            <Button onClick={handleAddProject} size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
-              <Plus className="h-4 w-4 sm:h-5 sm:w-5"/>
-            </Button>
-          )}
         </div>
         <p className="mt-2 text-base sm:text-lg text-muted-foreground">
           A selection of projects I've worked on.
@@ -85,16 +79,6 @@ export default function ProjectsPage() {
         {projects.map((project) => (
           <div key={project.id} className="relative group">
             <ProjectCard project={project} />
-            {isLoggedIn && (
-              <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button size="icon" variant="secondary" onClick={() => handleEditProject(project)}>
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button size="icon" variant="destructive" onClick={() => confirmDeleteProject(project)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
           </div>
         ))}
       </div>

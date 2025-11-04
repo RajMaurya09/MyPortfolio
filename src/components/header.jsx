@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -97,20 +97,9 @@ export default function Header() {
                       ))}
                     </ul>
                   </nav>
-                  <div className="mt-auto flex justify-center">
-                     <Button asChild variant="outline" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Link href="/login">Login</Link>
-                     </Button>
-                  </div>
                 </div>
               </SheetContent>
             </Sheet>
-          </div>
-
-          <div className="hidden md:flex items-center gap-4">
-             <Button asChild variant="outline">
-              <Link href="/login">Login</Link>
-            </Button>
           </div>
           
           <ThemeToggle />
