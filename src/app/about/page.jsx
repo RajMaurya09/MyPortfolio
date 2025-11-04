@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SkillFormDialog } from "@/components/skill-form-dialog";
 import { EducationFormDialog } from "@/components/education-form-dialog";
+import { AboutImageFormDialog } from "@/components/about-image-form-dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 
-const aboutImage = placeholderData.placeholderImages.find(
+const initialAboutImage = placeholderData.placeholderImages.find(
   (img) => img.id === "about-raj"
 );
 
@@ -48,15 +49,21 @@ const initialEducation = [
 ];
 
 export default function AboutPage() {
+  const [aboutImage, setAboutImage] = useState(initialAboutImage);
   const [skills, setSkills] = useState(initialSkills);
   const [education, setEducation] = useState(initialEducation);
 
   const [isSkillFormOpen, setIsSkillFormOpen] = useState(false);
   const [isEducationFormOpen, setIsEducationFormOpen] = useState(false);
+  const [isAboutImageFormOpen, setIsAboutImageFormOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   
   const [selectedEducation, setSelectedEducation] = useState(null);
   const [educationToDelete, setEducationToDelete] = useState(null);
+
+  const handleSaveAboutImage = (newImageData) => {
+    setAboutImage(prev => ({...prev, imageUrl: newImageData.imageUrl}));
+  };
 
   const handleSaveSkills = (newSkills) => {
     setSkills({
@@ -109,7 +116,7 @@ export default function AboutPage() {
         <div
           className="md:col-span-1 flex justify-center"
         >
-          <div className="relative w-48 h-48 sm:w-64 sm:h-64">
+          <div className="relative w-48 h-48 sm:w-64 sm:h-64 group">
             {aboutImage && (
               <Image
                 src={aboutImage.imageUrl}
@@ -121,6 +128,12 @@ export default function AboutPage() {
               />
             )}
             <div className="absolute inset-0 rounded-full border-4 border-primary/50 animate-pulse"></div>
+             <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button size="icon" variant="secondary" onClick={() => setIsAboutImageFormOpen(true)}>
+                  <Pencil className="h-6 w-6" />
+                  <span className="sr-only">Edit Image</span>
+                </Button>
+              </div>
           </div>
         </div>
         <div className="md:col-span-2 space-y-4 text-center md:text-left">
@@ -188,6 +201,12 @@ export default function AboutPage() {
         </div>
       </div>
 
+      <AboutImageFormDialog
+        isOpen={isAboutImageFormOpen}
+        setIsOpen={setIsAboutImageFormOpen}
+        onSave={handleSaveAboutImage}
+        imageUrl={aboutImage?.imageUrl}
+      />
       <SkillFormDialog
         isOpen={isSkillFormOpen}
         setIsOpen={setIsSkillFormOpen}
@@ -257,5 +276,3 @@ const EducationCard = ({ education }) => {
     </div>
   )
 }
-
-    
