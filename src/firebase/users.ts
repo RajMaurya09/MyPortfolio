@@ -9,6 +9,9 @@ export function saveUser(db: Firestore, user: User) {
   const userRef = doc(db, 'users', user.uid);
   const userData = {
     uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
     lastLogin: serverTimestamp(),
   };
 
