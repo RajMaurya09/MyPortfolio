@@ -1,28 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useAuth, useFirestore } from "@/firebase/client";
+import { signInAnonymously } from "firebase/auth";
+import { useAuth } from "@/firebase/client";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { saveUser } from "@/firebase/users";
 
 export default function LoginPage() {
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
 
   const handleSignIn = async () => {
-    if (!auth || !firestore) return;
-    const provider = new GoogleAuthProvider();
+    if (!auth) return;
     try {
-      const result = await signInWithPopup(auth, provider);
-      if (result.user) {
-        await saveUser(firestore, result.user);
-      }
+      await signInAnonymously(auth);
       router.push("/");
     } catch (error) {
-      console.error("Error signing in with Google:", error);
+      console.error("Error signing in anonymously:", error);
     }
   };
 
@@ -43,7 +37,7 @@ export default function LoginPage() {
           </p>
         </div>
         <Button onClick={handleSignIn} className="w-full" size="lg">
-          Sign In with Google
+          Sign In
         </Button>
       </div>
     </motion.div>
