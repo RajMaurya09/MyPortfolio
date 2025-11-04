@@ -1,33 +1,39 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 const TypewriterEffect = ({ texts, delay = 3000 }) => {
   const [index, setIndex] = useState(0);
+  const [displayedText, setDisplayedText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [textIndex, setTextIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prevIndex) => (prevIndex + 1) % texts.length);
-    }, delay);
+    const handleTyping = () => {
+      const currentText = texts[textIndex];
+      if (isDeleting) {
+        setDisplayedText(currentText.substring(0, displayedText.length - 1));
+      } else {
+        setDisplayedText(currentText.substring(0, displayedText.length + 1));
+      }
 
-    return () => clearInterval(interval);
-  }, [texts.length, delay]);
+      if (!isDeleting && displayedText === currentText) {
+        setTimeout(() => setIsDeleting(true), delay);
+      } else if (isDeleting && displayedText === "") {
+        setIsDeleting(false);
+        setTextIndex((prev) => (prev + 1) % texts.length);
+      }
+    };
+
+    const typingTimeout = setTimeout(handleTyping, isDeleting ? 100 : 150);
+    return () => clearTimeout(typingTimeout);
+  }, [displayedText, isDeleting, texts, textIndex, delay]);
 
   return (
     <div className="mt-4 font-headline text-lg sm:text-xl md:text-2xl text-primary h-16 sm:h-auto glass-card p-4 rounded-xl">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={texts[index]}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.5 }}
-          className="whitespace-nowrap flex items-center justify-center h-8"
-        >
-          <p>{texts[index]}</p>
-        </motion.div>
-      </AnimatePresence>
+      <div className="whitespace-nowrap flex items-center justify-center h-8">
+        <p>{displayedText}&nbsp;</p>
+      </div>
     </div>
   );
 };

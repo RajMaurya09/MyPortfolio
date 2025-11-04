@@ -1,27 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import TypewriterEffect from "@/components/typewriter-effect";
 import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
+    <div
       className="flex flex-col items-center justify-center text-center h-full min-h-[calc(100vh-12rem)]"
     >
-      <motion.h1
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.8 }}
+      <h1
         className="font-headline text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70"
       >
         Raj Maurya
-      </motion.h1>
+      </h1>
 
       <TypewriterEffect
         texts={[
@@ -33,19 +26,13 @@ export default function Home() {
         ]}
       />
 
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.8 }}
+      <p
         className="mt-6 max-w-xl text-lg text-muted-foreground"
       >
         I build beautiful, responsive, and performant web applications with a focus on user experience and clean code.
-      </motion.p>
+      </p>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.8 }}
+      <div
         className="mt-8 flex flex-wrap justify-center gap-4"
       >
         <Button asChild size="lg">
@@ -56,7 +43,7 @@ export default function Home() {
         <Button asChild variant="outline" size="lg">
           <Link href="/contact">Get in Touch</Link>
         </Button>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

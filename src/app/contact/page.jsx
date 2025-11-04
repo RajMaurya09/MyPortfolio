@@ -1,14 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ContactForm } from "@/components/contact-form";
 
 export default function ContactPage() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
+    <div
       className="max-w-2xl mx-auto"
     >
       <div className="text-center mb-8">
@@ -20,6 +16,6 @@ export default function ContactPage() {
       <div className="glass-card p-8">
         <ContactForm />
       </div>
-    </motion.div>
+    </div>
   );
 }

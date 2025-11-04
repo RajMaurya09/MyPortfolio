@@ -1,17 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { useAuth, useFirestore } from "@/firebase/client";
-import { saveUser } from "@/firebase/users";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -33,8 +27,6 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
-  const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -47,75 +39,28 @@ export default function LoginPage() {
     },
   });
 
-  const handleAuthError = (error) => {
-    setIsLoading(false);
-    let title = "An error occurred";
-    let description = "Please try again later.";
-
-    switch (error.code) {
-      case "auth/user-not-found":
-      case "auth/wrong-password":
-        title = "Invalid Credentials";
-        description = "The email or password you entered is incorrect.";
-        break;
-      case "auth/email-already-in-use":
-        title = "Email Already in Use";
-        description =
-          "This email address is already associated with an account.";
-        break;
-      case "auth/weak-password":
-        title = "Weak Password";
-        description = "The password must be at least 6 characters long.";
-        break;
-      case "auth/operation-not-allowed":
-        title = "Sign-in Method Disabled";
-        description = "Email/Password sign-in is not enabled. Please enable it in your Firebase project's authentication settings.";
-        break;
-      default:
-        title = "Authentication Error";
-        description = error.message;
-        break;
-    }
-
-    toast({
-      variant: "destructive",
-      title: title,
-      description: description,
-    });
-  };
-
   const handleSignIn = async (values) => {
-    if (!auth) return;
     setIsLoading(true);
-    try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      router.push("/");
-    } catch (error) {
-      handleAuthError(error);
-    }
+    // Mock sign-in
+    console.log("Signing in with:", values);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    toast({ title: "Signed In", description: "You have been signed in." });
+    router.push("/");
+    setIsLoading(false);
   };
 
   const handleSignUp = async (values) => {
-    if (!auth || !firestore) return;
     setIsLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password
-      );
-      saveUser(firestore, userCredential.user);
-      router.push("/");
-    } catch (error) {
-      handleAuthError(error);
-    }
+    // Mock sign-up
+    console.log("Signing up with:", values);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    toast({ title: "Signed Up", description: "Your account has been created." });
+    router.push("/");
+    setIsLoading(false);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
+    <div
       className="flex flex-col items-center justify-center min-h-[calc(100vh-12rem)]"
     >
       <div className="w-full max-w-sm glass-card p-8 space-y-6">
@@ -186,6 +131,6 @@ export default function LoginPage() {
           </form>
         </Form>
       </div>
-    </motion.div>
+    </div>
   );
 }

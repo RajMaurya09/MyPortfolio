@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { ProjectCard } from "@/components/project-card";
 import { ProjectFormDialog } from "@/components/project-form-dialog";
 import { projectsData } from "@/lib/projects-data";
-import { useUser } from "@/firebase/client";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -19,23 +17,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
 export default function ProjectsPage() {
-  const { user } = useUser();
   const [projects, setProjects] = useState(projectsData);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectToDelete, setProjectToDelete] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock auth state
 
   const handleAddProject = () => {
     setSelectedProject(null);
@@ -75,15 +63,12 @@ export default function ProjectsPage() {
 
   return (
     <div className="space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <div
         className="text-center"
       >
         <div className="flex justify-center items-center gap-4">
           <h1 className="font-headline text-4xl font-bold text-primary">My Projects</h1>
-          {user && (
+          {isLoggedIn && (
             <Button onClick={handleAddProject} size="icon">
               <Plus />
             </Button>
@@ -92,18 +77,15 @@ export default function ProjectsPage() {
         <p className="mt-2 text-lg text-muted-foreground">
           A selection of projects I've worked on.
         </p>
-      </motion.div>
+      </div>
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       >
         {projects.map((project) => (
           <div key={project.id} className="relative group">
             <ProjectCard project={project} />
-            {user && (
+            {isLoggedIn && (
               <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button size="icon" variant="secondary" onClick={() => handleEditProject(project)}>
                   <Pencil className="h-4 w-4" />
@@ -115,7 +97,7 @@ export default function ProjectsPage() {
             )}
           </div>
         ))}
-      </motion.div>
+      </div>
 
       <ProjectFormDialog
         isOpen={isFormOpen}

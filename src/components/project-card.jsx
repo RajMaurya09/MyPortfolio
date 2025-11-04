@@ -2,20 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Github, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
 export function ProjectCard({ project }) {
   return (
-    <motion.div
-      variants={cardVariants}
+    <div
       className="glass-card overflow-hidden flex flex-col glow-effect relative"
     >
       <div className="relative aspect-video">
@@ -65,6 +58,6 @@ export function ProjectCard({ project }) {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
