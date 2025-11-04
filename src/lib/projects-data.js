@@ -47,6 +47,7 @@ export const projectsData = [
     imageUrl: "https://picsum.photos/seed/project5/600/400",
     imageHint: "weather forecast",
     liveUrl: "#",
+    repoUrl: "#",
   },
     {
     id: 6,
@@ -55,6 +56,7 @@ export const projectsData = [
     technologies: ["Next.js", "MDX", "Prisma", "PostgreSQL"],
     imageUrl: "https://picsum.photos/seed/project6/600/400",
     imageHint: "writing blog",
+    liveUrl: "#",
     repoUrl: "#",
   },
 ];
