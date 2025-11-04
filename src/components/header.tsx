@@ -6,9 +6,10 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
-import { useUser } from "@/firebase";
-import { handleSignOut } from "@/app/auth";
+import { useAuth } from "@/firebase/client";
 import { Button } from "./ui/button";
+import { signOut } from "firebase/auth";
+import { useUser } from "@/firebase/client";
 
 const navItems = [
   { name: "Home", href: "/" },
@@ -21,16 +22,26 @@ export default function Header() {
   const pathname = usePathname();
   const [hidden, setHidden] = useState(false);
   const { scrollY } = useScroll();
-  const user = useUser();
+  const { user } = useUser();
+  const auth = useAuth();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious();
-    if (latest > previous && latest > 150) {
+    if (previous !== undefined && latest > previous && latest > 150) {
       setHidden(true);
     } else {
       setHidden(false);
     }
   });
+
+  const handleSignOut = async () => {
+    if (!auth) return;
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   return (
     <motion.header

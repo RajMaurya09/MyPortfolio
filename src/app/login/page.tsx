@@ -2,19 +2,24 @@
 
 import { useRouter } from "next/navigation";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useAuth } from "@/firebase";
+import { useAuth, useFirestore } from "@/firebase/client";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { saveUser } from "@/firebase/users";
 
 export default function LoginPage() {
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
 
   const handleSignIn = async () => {
-    if (!auth) return;
+    if (!auth || !firestore) return;
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      if (result.user) {
+        await saveUser(firestore, result.user);
+      }
       router.push("/");
     } catch (error) {
       console.error("Error signing in with Google:", error);
