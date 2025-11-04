@@ -3,23 +3,10 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import placeholderData from "@/lib/placeholder-images.json";
-import { Code, Pencil, Server, Wind, Edit, GraduationCap, Plus, Trash2 } from "lucide-react";
+import { Code, Pencil, Server, Wind, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { SkillFormDialog } from "@/components/skill-form-dialog";
-import { EducationFormDialog } from "@/components/education-form-dialog";
 import { AboutImageFormDialog } from "@/components/about-image-form-dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-
 
 const initialAboutImage = placeholderData.placeholderImages.find(
   (img) => img.id === "about-raj"
@@ -50,63 +37,14 @@ const initialEducation = [
 
 export default function AboutPage() {
   const [aboutImage, setAboutImage] = useState(initialAboutImage);
-  const [skills, setSkills] = useState(initialSkills);
-  const [education, setEducation] = useState(initialEducation);
+  const [skills] = useState(initialSkills);
+  const [education] = useState(initialEducation);
 
-  const [isSkillFormOpen, setIsSkillFormOpen] = useState(false);
-  const [isEducationFormOpen, setIsEducationFormOpen] = useState(false);
   const [isAboutImageFormOpen, setIsAboutImageFormOpen] = useState(false);
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
   
-  const [selectedEducation, setSelectedEducation] = useState(null);
-  const [educationToDelete, setEducationToDelete] = useState(null);
-
   const handleSaveAboutImage = (newImageData) => {
     setAboutImage(prev => ({...prev, imageUrl: newImageData.imageUrl}));
   };
-
-  const handleSaveSkills = (newSkills) => {
-    setSkills({
-      frontend: newSkills.frontend.split(',').map(s => s.trim()),
-      backend: newSkills.backend.split(',').map(s => s.trim()),
-      tools: newSkills.tools.split(',').map(s => s.trim()),
-    });
-  };
-
-  const handleAddEducation = () => {
-    setSelectedEducation(null);
-    setIsEducationFormOpen(true);
-  };
-  
-  const handleEditEducation = (edu) => {
-    setSelectedEducation(edu);
-    setIsEducationFormOpen(true);
-  };
-
-  const confirmDeleteEducation = (edu) => {
-    setEducationToDelete(edu);
-    setIsAlertOpen(true);
-  };
-
-  const handleDeleteEducation = () => {
-    if (educationToDelete) {
-      setEducation(education.filter((e) => e.id !== educationToDelete.id));
-      setEducationToDelete(null);
-      setIsAlertOpen(false);
-    }
-  };
-
-  const handleSaveEducation = (eduToSave) => {
-    if (selectedEducation) {
-      setEducation(
-        education.map((e) => (e.id === eduToSave.id ? eduToSave : e))
-      );
-    } else {
-      const newEducation = { ...eduToSave, id: Date.now() };
-      setEducation([...education, newEducation]);
-    }
-  };
-
 
   return (
     <div
@@ -150,10 +88,6 @@ export default function AboutPage() {
       <div className="space-y-8">
         <div className="flex justify-center items-center gap-4">
           <h2 className="text-center font-headline text-2xl sm:text-3xl font-bold">My Tech Stack</h2>
-           <Button variant="outline" size="icon" onClick={() => setIsSkillFormOpen(true)}>
-             <Edit className="h-4 w-4" />
-             <span className="sr-only">Edit Skills</span>
-           </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           <SkillCard 
@@ -177,25 +111,11 @@ export default function AboutPage() {
       <div className="space-y-8">
         <div className="flex justify-center items-center gap-4">
           <h2 className="text-center font-headline text-2xl sm:text-3xl font-bold">Education</h2>
-           <Button variant="outline" size="icon" onClick={handleAddEducation}>
-             <Plus className="h-4 w-4" />
-             <span className="sr-only">Add Education</span>
-           </Button>
         </div>
         <div className="space-y-6">
           {education.map(edu => (
             <div key={edu.id} className="relative group">
               <EducationCard education={edu} />
-              <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button size="icon" variant="secondary" onClick={() => handleEditEducation(edu)}>
-                  <Pencil className="h-4 w-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button size="icon" variant="destructive" onClick={() => confirmDeleteEducation(edu)}>
-                  <Trash2 className="h-4 w-4" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </div>
             </div>
           ))}
         </div>
@@ -207,32 +127,6 @@ export default function AboutPage() {
         onSave={handleSaveAboutImage}
         imageUrl={aboutImage?.imageUrl}
       />
-      <SkillFormDialog
-        isOpen={isSkillFormOpen}
-        setIsOpen={setIsSkillFormOpen}
-        onSave={handleSaveSkills}
-        skills={skills}
-      />
-      <EducationFormDialog
-        isOpen={isEducationFormOpen}
-        setIsOpen={setIsEducationFormOpen}
-        onSave={handleSaveEducation}
-        education={selectedEducation}
-      />
-       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete this education entry.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteEducation}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
