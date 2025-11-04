@@ -6,6 +6,9 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
+import { useUser } from "@/firebase";
+import { handleSignOut } from "@/app/auth";
+import { Button } from "./ui/button";
 
 const navItems = [
   { name: "Home", href: "/" },
@@ -18,6 +21,7 @@ export default function Header() {
   const pathname = usePathname();
   const [hidden, setHidden] = useState(false);
   const { scrollY } = useScroll();
+  const user = useUser();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious();
@@ -69,6 +73,13 @@ export default function Header() {
           </ul>
         </nav>
         <div className="flex items-center gap-4">
+          {user ? (
+            <Button variant="outline" onClick={handleSignOut}>Logout</Button>
+          ) : (
+            <Button asChild variant="outline">
+              <Link href="/login">Login</Link>
+            </Button>
+          )}
           <ThemeToggle />
         </div>
       </div>
