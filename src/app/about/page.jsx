@@ -3,8 +3,11 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import placeholderData from "@/lib/placeholder-images.json";
-import { Code, Pencil, Server, Wind } from "lucide-react";
+import { Code, Pencil, Server, Wind, Edit } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { SkillFormDialog } from "@/components/skill-form-dialog";
+
 
 const aboutImage = placeholderData.placeholderImages.find(
   (img) => img.id === "about-raj"
@@ -17,7 +20,16 @@ const initialSkills = {
 };
 
 export default function AboutPage() {
-  const [skills] = useState(initialSkills);
+  const [skills, setSkills] = useState(initialSkills);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const handleSaveSkills = (newSkills) => {
+    setSkills({
+      frontend: newSkills.frontend.split(',').map(s => s.trim()),
+      backend: newSkills.backend.split(',').map(s => s.trim()),
+      tools: newSkills.tools.split(',').map(s => s.trim()),
+    });
+  };
 
   return (
     <div
@@ -55,6 +67,10 @@ export default function AboutPage() {
       <div className="space-y-8">
         <div className="flex justify-center items-center gap-4">
           <h2 className="text-center font-headline text-2xl sm:text-3xl font-bold">My Tech Stack</h2>
+           <Button variant="outline" size="icon" onClick={() => setIsFormOpen(true)}>
+             <Edit className="h-4 w-4" />
+             <span className="sr-only">Edit Skills</span>
+           </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           <SkillCard 
@@ -74,6 +90,12 @@ export default function AboutPage() {
           />
         </div>
       </div>
+      <SkillFormDialog
+        isOpen={isFormOpen}
+        setIsOpen={setIsFormOpen}
+        onSave={handleSaveSkills}
+        skills={skills}
+      />
     </div>
   );
 }
