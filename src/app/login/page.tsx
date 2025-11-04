@@ -69,6 +69,10 @@ export default function LoginPage() {
         title = "Weak Password";
         description = "The password must be at least 6 characters long.";
         break;
+      case "auth/operation-not-allowed":
+        title = "Sign-in Method Disabled";
+        description = "Email/Password sign-in is not enabled. Please enable it in your Firebase project's authentication settings.";
+        break;
       default:
         title = "Authentication Error";
         description = error.message;
