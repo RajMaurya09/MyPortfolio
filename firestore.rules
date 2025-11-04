@@ -1,0 +1,65 @@
+/**
+ * @file Firestore Security Rules for User Data
+ *
+ * @core_philosophy:
+ *   This ruleset enforces a strict user-ownership model for all data stored under the `/users/{userId}` collection.
+ *   Each user can only access their own data. Listing of users is explicitly forbidden for privacy and security reasons.
+ *
+ * @data_structure:
+ *   All user data is stored under the `/users/{userId}` path, where `{userId}` corresponds to the authenticated user's UID.
+ *   Each document represents a single user's profile and contact form submission.
+ *
+ * @key_security_decisions:
+ *   - User listing is disallowed to prevent unauthorized data access.
+ *   - All write operations require authentication to ensure data integrity and prevent anonymous submissions.
+ *
+ * @denormalization_for_authorization:
+ *   The `userId` is derived directly from `request.auth.uid` and used in the path. The rules validate that the `id` field inside the document matches this `userId`.
+ *   This avoids the need for complex queries or additional reads to determine ownership.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to user data stored under /users/{userId}.
+     * @path /users/{userId}
+     * @allow (create) Signed-in user creates their own profile: request.auth.uid == 'user_abc' and request.resource.data.id == 'user_abc'.
+     * @allow (get) Signed-in user reads their own profile: request.auth.uid == 'user_abc'.
+     * @allow (update) Signed-in user updates their own profile: request.auth.uid == 'user_abc' and resource.data.id == 'user_abc'.
+     * @allow (delete) Signed-in user deletes their own profile: request.auth.uid == 'user_abc' and resource.data.id == 'user_abc'.
+     * @deny (create) User attempts to create a profile for another user: request.auth.uid == 'user_abc' but request.resource.data.id == 'user_xyz'.
+     * @deny (get) User attempts to read another user's profile: request.auth.uid == 'user_xyz'.
+     * @deny (update) User attempts to update another user's profile: request.auth.uid == 'user_xyz'.
+     * @deny (delete) User attempts to delete another user's profile: request.auth.uid == 'user_xyz'.
+     * @principle Enforces document ownership for all operations.  Only the authenticated user can create, read, update, or delete their own profile.
+     */
+    match /users/{userId} {
+      // Allows a user to read their own document.
+      allow get: if isSignedIn() && isOwner(userId);
+      // Disallows listing of all user documents.
+      allow list: if false;
+      // Allows a user to create their own document, enforcing that the userId matches the authenticated user's uid.
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      // Allows a user to update their own document, enforcing that the userId matches the authenticated user's uid and that the document exists.
+      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      // Allows a user to delete their own document, enforcing that the userId matches the authenticated user's uid and that the document exists.
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+    }
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Checks if the request is made by the owner of the document (userId matches request.auth.uid).
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Checks if the request is made by the owner of an existing document.
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+  }
+}

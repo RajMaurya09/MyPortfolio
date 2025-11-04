@@ -1,6 +1,68 @@
 {
-  "entities": {},
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user profile for the portfolio website.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "message": {
+          "type": "string",
+          "description": "The message the user sent from the contact form."
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time the contact form was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "submissionDate"
+      ]
+    }
+  },
   "auth": {
-    "providers": ["google.com"]
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user data. The userId is obtained from request.auth.uid. All access is based on user ID, ensuring authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user, derived from request.auth.uid."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to store user contact form submissions. Given the requirement to store user data, a path-based ownership model is used under the `/users/{userId}` collection group. Each user document contains all the information submitted through the contact form, including the message, submission date, and other relevant user details. Since the app uses password and anonymous auth providers and stores user information, using `/users/{userId}` ensures proper ownership. This approach provides authorization independence because access control is based on the user's unique ID. Since all write operations require authentication, all list operations are prevented with `allow list: if false;` to ensure security. This approach also satisfies QAPs, as listing user data is restricted."
   }
 }
