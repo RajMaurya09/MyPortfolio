@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { useAuth } from "@/firebase/client";
+import { useAuth, useFirestore } from "@/firebase/client";
 import { saveUser } from "@/firebase/users";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +35,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -92,7 +93,7 @@ export default function LoginPage() {
   };
 
   const handleSignUp = async (values: z.infer<typeof formSchema>) => {
-    if (!auth) return;
+    if (!auth || !firestore) return;
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -100,7 +101,7 @@ export default function LoginPage() {
         values.email,
         values.password
       );
-      saveUser(auth.firestore, userCredential.user);
+      saveUser(firestore, userCredential.user);
       router.push("/");
     } catch (error) {
       handleAuthError(error as AuthError);
