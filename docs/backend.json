@@ -36,12 +36,42 @@
         "message",
         "submissionDate"
       ]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's profile information.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's unique ID from Firebase Authentication."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "URL of the user's profile picture.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "uid",
+        "email"
+      ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "anonymous",
+      "google.com"
     ]
   },
   "firestore": {
@@ -49,9 +79,9 @@
       {
         "path": "/users/{userId}",
         "definition": {
-          "entityName": "User",
+          "entityName": "UserProfile",
           "schema": {
-            "$ref": "#/backend/entities/User"
+            "$ref": "#/backend/entities/UserProfile"
           },
           "description": "Stores user data. The userId is obtained from request.auth.uid. All access is based on user ID, ensuring authorization independence.",
           "params": [
@@ -63,6 +93,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to store user contact form submissions. Given the requirement to store user data, a path-based ownership model is used under the `/users/{userId}` collection group. Each user document contains all the information submitted through the contact form, including the message, submission date, and other relevant user details. Since the app uses password and anonymous auth providers and stores user information, using `/users/{userId}` ensures proper ownership. This approach provides authorization independence because access control is based on the user's unique ID. Since all write operations require authentication, all list operations are prevented with `allow list: if false;` to ensure security. This approach also satisfies QAPs, as listing user data is restricted."
+    "reasoning": "The Firestore structure is designed to store user contact form submissions and user profiles. A path-based ownership model is used under the `/users/{userId}` collection. This ensures proper ownership and authorization independence, as access control is based on the user's unique ID. All write operations require authentication, and listing user data is restricted to enhance security."
   }
 }

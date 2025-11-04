@@ -14,7 +14,7 @@
  *   - All write operations require authentication to ensure data integrity and prevent anonymous submissions.
  *
  * @denormalization_for_authorization:
- *   The `userId` is derived directly from `request.auth.uid` and used in the path. The rules validate that the `id` field inside the document matches this `userId`.
+ *   The `userId` is derived directly from `request.auth.uid` and used in the path. The rules validate that the `uid` field inside the document matches this `userId`.
  *   This avoids the need for complex queries or additional reads to determine ownership.
  */
 rules_version = '2';
@@ -24,11 +24,11 @@ service cloud.firestore {
     /**
      * @description Controls access to user data stored under /users/{userId}.
      * @path /users/{userId}
-     * @allow (create) Signed-in user creates their own profile: request.auth.uid == 'user_abc' and request.resource.data.id == 'user_abc'.
+     * @allow (create) Signed-in user creates their own profile: request.auth.uid == 'user_abc' and request.resource.data.uid == 'user_abc'.
      * @allow (get) Signed-in user reads their own profile: request.auth.uid == 'user_abc'.
-     * @allow (update) Signed-in user updates their own profile: request.auth.uid == 'user_abc' and resource.data.id == 'user_abc'.
-     * @allow (delete) Signed-in user deletes their own profile: request.auth.uid == 'user_abc' and resource.data.id == 'user_abc'.
-     * @deny (create) User attempts to create a profile for another user: request.auth.uid == 'user_abc' but request.resource.data.id == 'user_xyz'.
+     * @allow (update) Signed-in user updates their own profile: request.auth.uid == 'user_abc' and resource.data.uid == 'user_abc'.
+     * @allow (delete) Signed-in user deletes their own profile: request.auth.uid == 'user_abc' and resource.data.uid == 'user_abc'.
+     * @deny (create) User attempts to create a profile for another user: request.auth.uid == 'user_abc' but request.resource.data.uid == 'user_xyz'.
      * @deny (get) User attempts to read another user's profile: request.auth.uid == 'user_xyz'.
      * @deny (update) User attempts to update another user's profile: request.auth.uid == 'user_xyz'.
      * @deny (delete) User attempts to delete another user's profile: request.auth.uid == 'user_xyz'.
@@ -40,9 +40,9 @@ service cloud.firestore {
       // Disallows listing of all user documents.
       allow list: if false;
       // Allows a user to create their own document, enforcing that the userId matches the authenticated user's uid.
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.uid == userId;
       // Allows a user to update their own document, enforcing that the userId matches the authenticated user's uid and that the document exists.
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.uid == resource.data.uid;
       // Allows a user to delete their own document, enforcing that the userId matches the authenticated user's uid and that the document exists.
       allow delete: if isSignedIn() && isExistingOwner(userId);
     }
