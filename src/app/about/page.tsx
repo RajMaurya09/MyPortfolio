@@ -4,19 +4,42 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import placeholderData from "@/lib/placeholder-images.json";
-import { Code, Server, Wind } from "lucide-react";
+import { Code, Server, Wind, Pencil } from "lucide-react";
+import { useUser } from "@/firebase";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const aboutImage = placeholderData.placeholderImages.find(
   (img) => img.id === "about-raj"
 );
 
-const skills = {
+const initialSkills = {
   frontend: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
   backend: ["Node.js", "Express", "Firebase", "PostgreSQL", "Prisma"],
   tools: ["Git", "Docker", "Vite", "Webpack"],
 };
 
 export default function AboutPage() {
+  const user = useUser();
+  const [skills, setSkills] = useState(initialSkills);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editableSkills, setEditableSkills] = useState(skills);
+
+  const handleSave = () => {
+    setSkills(editableSkills);
+    setIsDialogOpen(false);
+  };
+  
+  const handleSkillsChange = (category: keyof typeof skills, value: string) => {
+    setEditableSkills(prev => ({
+        ...prev,
+        [category]: value.split(',').map(s => s.trim())
+    }));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -59,6 +82,11 @@ export default function AboutPage() {
       <div className="space-y-8">
         <div className="flex justify-center items-center gap-4">
             <h2 className="text-center font-headline text-3xl font-bold">My Tech Stack</h2>
+            {user && (
+              <Button variant="ghost" size="icon" onClick={() => { setEditableSkills(skills); setIsDialogOpen(true); }}>
+                <Pencil className="h-5 w-5 text-primary" />
+              </Button>
+            )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <SkillCard 
@@ -78,6 +106,46 @@ export default function AboutPage() {
           />
         </div>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Tech Stack</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="frontend-skills">Frontend (comma-separated)</Label>
+              <Input 
+                id="frontend-skills"
+                value={editableSkills.frontend.join(', ')}
+                onChange={(e) => handleSkillsChange('frontend', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="backend-skills">Backend (comma-separated)</Label>
+              <Input 
+                id="backend-skills"
+                value={editableSkills.backend.join(', ')}
+                onChange={(e) => handleSkillsChange('backend', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="tools-skills">Tools & Technologies (comma-separated)</Label>
+              <Input 
+                id="tools-skills"
+                value={editableSkills.tools.join(', ')}
+                onChange={(e) => handleSkillsChange('tools', e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleSave}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

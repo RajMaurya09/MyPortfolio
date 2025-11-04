@@ -6,6 +6,9 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
+import { useUser } from "@/firebase";
+import { getAuth, signOut } from "firebase/auth";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { name: "Home", href: "/" },
@@ -18,6 +21,8 @@ export default function Header() {
   const pathname = usePathname();
   const [hidden, setHidden] = useState(false);
   const { scrollY } = useScroll();
+  const user = useUser();
+  const auth = getAuth();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious();
@@ -28,8 +33,12 @@ export default function Header() {
     }
   });
 
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
   return (
-    <motion.header 
+    <motion.header
       variants={{
         visible: { y: 0 },
         hidden: { y: "-100%" },
@@ -50,7 +59,9 @@ export default function Header() {
                   href={item.href}
                   className={cn(
                     "relative transition-colors hover:text-primary",
-                    pathname === item.href ? "text-primary" : "text-muted-foreground"
+                    pathname === item.href
+                      ? "text-primary"
+                      : "text-muted-foreground"
                   )}
                 >
                   {item.name}
@@ -68,6 +79,15 @@ export default function Header() {
         </nav>
         <div className="flex items-center gap-4">
           <ThemeToggle />
+          {user ? (
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              Logout
+            </Button>
+          ) : (
+            <Button asChild variant="outline" size="sm">
+              <Link href="/login">Login</Link>
+            </Button>
+          )}
         </div>
       </div>
     </motion.header>
