@@ -3,10 +3,21 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import placeholderData from "@/lib/placeholder-images.json";
-import { Code, Pencil, Server, Wind, Edit } from "lucide-react";
+import { Code, Pencil, Server, Wind, Edit, GraduationCap, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SkillFormDialog } from "@/components/skill-form-dialog";
+import { EducationFormDialog } from "@/components/education-form-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 
 const aboutImage = placeholderData.placeholderImages.find(
@@ -19,9 +30,33 @@ const initialSkills = {
   tools: ["Git", "Docker", "Vite", "Webpack"],
 };
 
+const initialEducation = [
+  {
+    id: 1,
+    degree: "Bachelor of Science in Computer Science",
+    school: "University of Technology",
+    year: "2018 - 2022",
+    description: "Focused on software development, algorithms, and data structures."
+  },
+  {
+    id: 2,
+    degree: "High School Diploma",
+    school: "Central High School",
+    year: "2016 - 2018",
+    description: "Specialized in science and mathematics."
+  }
+];
+
 export default function AboutPage() {
   const [skills, setSkills] = useState(initialSkills);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [education, setEducation] = useState(initialEducation);
+
+  const [isSkillFormOpen, setIsSkillFormOpen] = useState(false);
+  const [isEducationFormOpen, setIsEducationFormOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  
+  const [selectedEducation, setSelectedEducation] = useState(null);
+  const [educationToDelete, setEducationToDelete] = useState(null);
 
   const handleSaveSkills = (newSkills) => {
     setSkills({
@@ -30,6 +65,41 @@ export default function AboutPage() {
       tools: newSkills.tools.split(',').map(s => s.trim()),
     });
   };
+
+  const handleAddEducation = () => {
+    setSelectedEducation(null);
+    setIsEducationFormOpen(true);
+  };
+  
+  const handleEditEducation = (edu) => {
+    setSelectedEducation(edu);
+    setIsEducationFormOpen(true);
+  };
+
+  const confirmDeleteEducation = (edu) => {
+    setEducationToDelete(edu);
+    setIsAlertOpen(true);
+  };
+
+  const handleDeleteEducation = () => {
+    if (educationToDelete) {
+      setEducation(education.filter((e) => e.id !== educationToDelete.id));
+      setEducationToDelete(null);
+      setIsAlertOpen(false);
+    }
+  };
+
+  const handleSaveEducation = (eduToSave) => {
+    if (selectedEducation) {
+      setEducation(
+        education.map((e) => (e.id === eduToSave.id ? eduToSave : e))
+      );
+    } else {
+      const newEducation = { ...eduToSave, id: Date.now() };
+      setEducation([...education, newEducation]);
+    }
+  };
+
 
   return (
     <div
@@ -67,7 +137,7 @@ export default function AboutPage() {
       <div className="space-y-8">
         <div className="flex justify-center items-center gap-4">
           <h2 className="text-center font-headline text-2xl sm:text-3xl font-bold">My Tech Stack</h2>
-           <Button variant="outline" size="icon" onClick={() => setIsFormOpen(true)}>
+           <Button variant="outline" size="icon" onClick={() => setIsSkillFormOpen(true)}>
              <Edit className="h-4 w-4" />
              <span className="sr-only">Edit Skills</span>
            </Button>
@@ -90,12 +160,60 @@ export default function AboutPage() {
           />
         </div>
       </div>
+
+      <div className="space-y-8">
+        <div className="flex justify-center items-center gap-4">
+          <h2 className="text-center font-headline text-2xl sm:text-3xl font-bold">Education</h2>
+           <Button variant="outline" size="icon" onClick={handleAddEducation}>
+             <Plus className="h-4 w-4" />
+             <span className="sr-only">Add Education</span>
+           </Button>
+        </div>
+        <div className="space-y-6">
+          {education.map(edu => (
+            <div key={edu.id} className="relative group">
+              <EducationCard education={edu} />
+              <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button size="icon" variant="secondary" onClick={() => handleEditEducation(edu)}>
+                  <Pencil className="h-4 w-4" />
+                  <span className="sr-only">Edit</span>
+                </Button>
+                <Button size="icon" variant="destructive" onClick={() => confirmDeleteEducation(edu)}>
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">Delete</span>
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <SkillFormDialog
-        isOpen={isFormOpen}
-        setIsOpen={setIsFormOpen}
+        isOpen={isSkillFormOpen}
+        setIsOpen={setIsSkillFormOpen}
         onSave={handleSaveSkills}
         skills={skills}
       />
+      <EducationFormDialog
+        isOpen={isEducationFormOpen}
+        setIsOpen={setIsEducationFormOpen}
+        onSave={handleSaveEducation}
+        education={selectedEducation}
+      />
+       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete this education entry.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteEducation}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -119,3 +237,25 @@ const SkillCard = ({ icon, title, skills }) => {
     </div>
   )
 }
+
+const EducationCard = ({ education }) => {
+  return (
+    <div className="glass-card p-6">
+      <div className="flex items-start gap-4">
+        <div className="text-primary bg-primary/10 p-3 rounded-lg mt-1">
+          <GraduationCap />
+        </div>
+        <div className="flex-1">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center">
+            <h3 className="font-headline text-lg font-semibold">{education.degree}</h3>
+            <p className="text-sm text-muted-foreground font-medium">{education.year}</p>
+          </div>
+          <p className="text-md font-medium text-primary">{education.school}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{education.description}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+    
